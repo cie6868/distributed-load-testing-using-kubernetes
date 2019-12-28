@@ -18,7 +18,8 @@
 import uuid
 
 from datetime import datetime
-from locust import HttpLocust, TaskSet, task
+from locust import TaskSet, task
+from locust.contrib.fasthttp import FastHttpLocust
 
 
 class MetricsTaskSet(TaskSet):
@@ -31,5 +32,5 @@ class MetricsTaskSet(TaskSet):
     def wordpress(self):
         self.client.get('/wordpress')
 
-class MetricsLocust(HttpLocust):
+class MetricsLocust(FastHttpLocust):
     task_set = MetricsTaskSet
