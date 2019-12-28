@@ -27,16 +27,9 @@ class MetricsTaskSet(TaskSet):
     def on_start(self):
         self._deviceid = str(uuid.uuid4())
 
-    @task(1)
-    def login(self):
-        self.client.post(
-            '/login', {"deviceid": self._deviceid})
-
-    @task(999)
-    def post_metrics(self):
-        self.client.post(
-            "/metrics", {"deviceid": self._deviceid, "timestamp": datetime.now()})
-
+    @task
+    def wordpress(self):
+        self.client.get('/wordpress')
 
 class MetricsLocust(HttpLocust):
     task_set = MetricsTaskSet
