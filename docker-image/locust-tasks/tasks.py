@@ -20,6 +20,7 @@ import uuid
 from datetime import datetime
 from locust import TaskSet, task
 from locust.contrib.fasthttp import FastHttpLocust
+from bs4 import BeautifulSoup
 
 
 class MetricsTaskSet(TaskSet):
@@ -30,7 +31,30 @@ class MetricsTaskSet(TaskSet):
 
     @task
     def wordpress(self):
-        self.client.get('/wordpress')
+        response = self.client.get('/wordpress')
+        self.get_linked_assets(response.text)
+
+    # parse HTML and get any script and stylehseet assets
+    def get_linked_assets(self, responsetext):
+        soup = BeautifulSoup(responsetext, "html.parser")
+        resource_urls = set()
+        for tag in soup.find_all('script', attrs = {'src': True}):
+            resource_urls.add(tag['src'])
+        for tag in soup.find_all('link', attrs = {'rel': 'stylesheet', 'href': True}):
+            resource_urls.add(tag['href'])
+        for url in resource_urls:
+            if self.is_on_site(url):
+                self.client.get(url, name = url)
+
+    # check if url is on target WordPress site and not elsewhere on the internet
+    def is_on_site(self, url):
+        if '/wordpress/wp-content/' in url:
+            return True
+        elif '/wordpress/wp-includes/' in url:
+            return True
+        else:
+            return False
+
 
 class MetricsLocust(FastHttpLocust):
     task_set = MetricsTaskSet
