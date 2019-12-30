@@ -31,8 +31,9 @@ class MetricsTaskSet(TaskSet):
 
     @task
     def wordpress(self):
-        response = self.client.get('/wordpress')
-        self.get_linked_assets(response.text)
+        self.client.get('/wordpress')
+        # response = self.client.get('/wordpress')
+        # self.get_linked_assets(response.text)
 
     # parse HTML and get any script and stylehseet assets
     def get_linked_assets(self, responsetext):
