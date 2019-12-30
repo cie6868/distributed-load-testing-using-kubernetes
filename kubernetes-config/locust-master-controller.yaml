@@ -36,7 +36,7 @@ spec:
             - name: LOCUST_MODE
               value: master
             - name: TARGET_HOST
-              value: http://157.230.39.229
+              value: http://35.243.181.40
           ports:
             - name: loc-master-web
               containerPort: 8089
